@@ -35,6 +35,7 @@
 #include <cmsis_core.h>
 #endif
 
+#include "ga3_watchdog.h"
 #include "io/io.h"
 #include "target.h"
 
@@ -450,8 +451,26 @@ int main(void)
     int rc;
     FIH_DECLARE(fih_rc, FIH_FAILURE);
 
+    #if defined(CONFIG_SOC_NRF5340_CPUAPP)
+    /*
+     * Disable the hardware watchdog timer before bootloader operations.
+     * This ensures the watchdog does not reset the system during lengthy
+     * bootloader tasks such as image verification, DFU wait, or serial recovery.
+     *
+     * This replaces the default MCUBOOT_WATCHDOG_SETUP and MCUBOOT_WATCHDOG_FEED macros
+     * with a custom implementation using `hw_watchdog_disable()`.
+     *
+     * Ref: https://eaton-corp.atlassian.net/browse/GA-1681
+     * Ref: https://docs.nordicsemi.com/bundle/ps_nrf5340/page/wdt.html#ariaid-title5
+     */
+    hw_watchdog_disable();
+    BOOT_LOG_INF("Watchdog disabled successfully");
+    #else
+    // Use default MCUBoot watchdog macros for other SoCs
     MCUBOOT_WATCHDOG_SETUP();
     MCUBOOT_WATCHDOG_FEED();
+    #endif
+    
 
 #if !defined(MCUBOOT_DIRECT_XIP)
     BOOT_LOG_INF("Starting bootloader");
