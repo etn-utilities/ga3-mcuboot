@@ -59,6 +59,7 @@ zephyr_library_sources(
   os.c
   keys.c
   root_cert.c
+  ga3_watchdog.c
   )
 
 if(DEFINED CONFIG_ENABLE_MGMT_PERUSER)
