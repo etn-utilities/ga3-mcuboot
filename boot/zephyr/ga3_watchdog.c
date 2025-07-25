@@ -8,6 +8,7 @@
  * @copyright Copyright Eaton Corporation {2023}
  *
  */
+#if defined(CONFIG_SOC_NRF5340_CPUAPP)
 #include "ga3_watchdog.h"
 #include <hal/nrf_wdt.h>
 
@@ -67,3 +68,4 @@ void hw_watchdog_disable()
     // Clear TSEN to avoid accidental STOP
     NRF_WDT0->TSEN = 0x00000000;
 }
+#endif // CONFIG_SOC_NRF5340_CPUAPP
